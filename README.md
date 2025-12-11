@@ -1,1 +1,5 @@
-# teste
+Instalar:
+```
+npm install
+npm run dev
+```
