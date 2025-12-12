@@ -42,11 +42,29 @@ export default function App() {
   // PASSO 1 — selections: up to 3 slots
   const [selectedPlanets, setSelectedPlanets] = useState([]);
 
-  // PASSO 3 — structures
-  const [structures, setStructures] = useState([
-    { id: 1, name: 'Estrutura 1', rotationRequired: 2, books: [false, false, false] },
-    { id: 2, name: 'Estrutura 2', rotationRequired: 1, books: [false, false, false] },
-    { id: 3, name: 'Estrutura 3', rotationRequired: 3, books: [false, false, false] }
+  // PASSO 3 — estantes (was estruturas): include bookTitles
+  const [estantes, setEstantes] = useState([
+    {
+      id: 1,
+      name: 'Estante #1',
+      rotationRequired: 2,
+      books: [false, false, false],
+      bookTitles: ['The Musica Universalis', 'The Black Veil', 'The Moon Directive']
+    },
+    {
+      id: 2,
+      name: 'Estante #2',
+      rotationRequired: 1,
+      books: [false, false, false],
+      bookTitles: ['Ashes and Bones', 'Echoes of Andromeda', 'The Unknowable Void']
+    },
+    {
+      id: 3,
+      name: 'Estante #3',
+      rotationRequired: 3,
+      books: [false, false, false],
+      bookTitles: ['Pyramids of Cydonia', 'Silence at Singularity', 'Witchlight Codex']
+    }
   ]);
 
   // PASSO 4 — planetary leaves (Júpiter, Netuno, Marte)
@@ -107,16 +125,16 @@ export default function App() {
   const password = selectedPlanets.length === 3 ? selectedPlanets.map(p => String(p.value)).join('') : '';
 
   // PASSO 3 book toggle
-  function toggleBook(structId, idx) {
-    setStructures(prev => prev.map(s => {
-      if (s.id !== structId) return s;
-      const nb = s.books.slice(); nb[idx] = !nb[idx];
-      return { ...s, books: nb };
+  function toggleBook(estanteId, idx) {
+    setEstantes(prev => prev.map(es => {
+      if (es.id !== estanteId) return es;
+      const nb = es.books.slice(); nb[idx] = !nb[idx];
+      return { ...es, books: nb };
     }));
   }
-  function giros(s) {
-    const sel = s.books.filter(Boolean).length;
-    return Math.max(0, s.rotationRequired - sel);
+  function giros(es) {
+    const sel = es.books.filter(Boolean).length;
+    return Math.max(0, es.rotationRequired - sel);
   }
 
   // PASSO 4 leaf selection (mutually exclusive)
@@ -180,26 +198,26 @@ export default function App() {
         <div style={{color:'#9ca3af'}}>Sem alterações — deixado como estava.</div>
       </section>
 
-      {/* PASSO 3 — Livros / Estruturas */}
+      {/* PASSO 3 — Livros / Estantes */}
       <section style={{marginTop:18}}>
-        <h2 style={{fontWeight:600}}>Estruturas</h2>
+        <h2 style={{fontWeight:600}}>Estantes</h2>
         <div style={{display:'flex', alignItems:'center', gap:12, marginTop:8}}>
           <StructureImagePlaceholder />
-          <div style={{color:'#9ca3af'}}>Imagem da Estrutura (placeholder)</div>
+          <div style={{color:'#9ca3af'}}>Imagem da Estante (placeholder)</div>
         </div>
 
         <div style={{display:'grid', gap:12, marginTop:12}}>
-          {structures.map(s => (
-            <div key={s.id} style={{padding:12, background:'#071022', borderRadius:8, border:'1px solid #263044'}}>
+          {estantes.map(es => (
+            <div key={es.id} style={{padding:12, background:'#071022', borderRadius:8, border:'1px solid #263044'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                <div style={{fontWeight:600}}>{s.name}</div>
-                <div style={{fontSize:12, color:'#9ca3af'}}>Giros necessários: {giros(s)}</div>
+                <div style={{fontWeight:600}}>{es.name}</div>
+                <div style={{fontSize:12, color:'#9ca3af'}}>Giros necessários: {giros(es)}</div>
               </div>
-              <div style={{marginTop:8, display:'flex', gap:10}}>
-                {s.books.map((b,idx) => (
-                  <label key={idx} style={{display:'flex', alignItems:'center', gap:6}}>
-                    <input type="checkbox" checked={b} onChange={() => toggleBook(s.id, idx)} />
-                    <span>Livro {idx+1}</span>
+              <div style={{marginTop:8, display:'flex', gap:10, flexDirection:'column'}}>
+                {es.bookTitles.map((title,idx) => (
+                  <label key={idx} style={{display:'flex', alignItems:'center', gap:8}}>
+                    <input type="checkbox" checked={es.books[idx]} onChange={() => toggleBook(es.id, idx)} />
+                    <span>{title}</span>
                   </label>
                 ))}
               </div>
