@@ -141,18 +141,31 @@ export default function App() {
   function toggleLeaf(planetName, dir) {
     setLeafSelections(prev => {
       const cur = prev[planetName] || null;
+      // If clicking the same selected direction -> deselect
       if (cur === dir) {
-        const c = {...prev}; delete c[planetName]; return c;
+        const clone = { ...prev };
+        delete clone[planetName];
+        return clone;
       }
-      return { ...prev, [planetName]: dir };
+      // Otherwise, select dir for this planet and ensure no other planet holds the same dir
+      const clone = { ...prev };
+      // Remove this dir from any other planet (keeps state consistent)
+      for (const p of Object.keys(clone)) {
+        if (p !== planetName && clone[p] === dir) {
+          delete clone[p];
+        }
+      }
+      clone[planetName] = dir;
+      return clone;
     });
   }
   function isDirDisabled(planetName, dir) {
+    // disabled if another planet already selected this dir
     return Object.entries(leafSelections).some(([p,d]) => p !== planetName && d === dir);
   }
 
   return (
-    <div style={{padding:20, fontFamily: 'Inter, sans-serif', color: '#e5e7eb'}}>
+    <div style={{Padding:20, fontFamily: 'Inter, sans-serif', color: '#e5e7eb'}}>
       <h1 style={{fontSize:20, fontWeight:700}}>COD Zombies EE Helper</h1>
       <p style={{color:'#9ca3af'}}>Aplicação com as alterações pedidas.</p>
 
@@ -239,7 +252,8 @@ export default function App() {
                   const disabled = isDirDisabled(pn, d);
                   return (
                     <button key={d} onClick={() => toggleLeaf(pn, d)} disabled={disabled && !selected}
-                      style={{padding:'6px 8px', borderRadius:6, background: selected ? '#10b981' : '#0b1220', border: disabled && !selected ? '1px dashed #374151' : '1px solid #263044', cursor: disabled && !selected ? 'not-allowed' : 'pointer'}}>
+                      title={disabled && !selected ? 'Direção já selecionada por outro planeta' : ''}
+                      style={{padding:'6px 8px', borderRadius:6, background: selected ? '#10b981' : '#0b1220', border: disabled && !selected ? '1px dashed #374151' : '1px solid #263044', opacity: disabled && !selected ? 0.5 : 1, cursor: disabled && !selected ? 'not-allowed' : 'pointer'}}>
                       {d}
                     </button>
                   );
